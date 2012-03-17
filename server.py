@@ -1,5 +1,6 @@
 import socket
 import threading
+import sys
 
 c = []
 
@@ -45,6 +46,11 @@ class client (threading.Thread):
 		self.sock.close()
 host = "localhost"
 port = 4444
+
+if __name__ == "__main__":
+	if (len(sys.argv)>1):
+		port = int(sys.argv[1])
+
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 s.bind((host, port))

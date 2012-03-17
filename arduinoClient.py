@@ -1,8 +1,15 @@
 import pyfirmata
 import socket
+import sys
 
 host = "localhost"
 port = 4444
+
+if __name__ == "__main__":
+	if (len(sys.argv)>1):
+		host = sys.argv[1]
+	if (len(sys.argv)>2):
+		port = int(sys.argv[2])
 
 out_p = [10,9,8,7,6,5]
 pins = {
