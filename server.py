@@ -44,7 +44,7 @@ class client (threading.Thread):
 		print "delete client"
 		c.remove(self)
 		self.sock.close()
-host = "localhost"
+host = "0.0.0.0"
 port = 4444
 
 if __name__ == "__main__":
