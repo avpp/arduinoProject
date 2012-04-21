@@ -1,6 +1,7 @@
 import pyfirmata
 import socket
 import sys
+import videoStream
 
 host = "localhost"
 port = 4444
@@ -26,6 +27,7 @@ def set_pins(pins):
 
 b = pyfirmata.Arduino('/dev/serial/by-id/usb-Arduino__www.arduino.cc__0043_6413138333135120A251-if00')
 
+videoastream
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((host, port))
 while True:
@@ -33,6 +35,14 @@ while True:
 	print result
 	if result == "exit":
 		break
+	elif result.startwith("pair"):
+		hostip = result[4:len(result)]
+		print "pair avaiilable on ip ", hostip)
+		videostream = videoStream.Server(hostip)
+		print "caps = ", videostream.emmiter.get_property("caps")
+		s.send("caps"+videostream.emmiter.get_property("caps"))
+		videostream.start()
+		print "stream start"
 	elif result[0] in pins:
 		set_pins(pins[result[0]])
 s.close()

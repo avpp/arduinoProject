@@ -1,6 +1,8 @@
 import socket
 import sys
 import cv2
+import threading
+import videoStream
 ##
 ## control by opencv window
 ## press ESC for disconnect from server and close window
@@ -11,6 +13,19 @@ import cv2
 ## press RIGHT to send turn right command
 ## press SPACE to send stop command (important in fixrd type of control)
 ##
+class listener (threading.Thread):
+	def __init__(self, sock):
+		self.sock = sock
+		self.alive = true
+	def run(self):
+		while (self.alive):
+			buf = self.sock.recv(1024)
+			if (buf.startwith("caps")):
+				CAPSparam = buf[4:len(buf)]
+				print "we have caps = ", CAPSparam
+				stream = videoStream.client(CAPSparam)
+				stream.start()
+				print "vido create"
 host = 'localhost'
 port = 4444
 if __name__ == "__main__":
@@ -21,6 +36,8 @@ if __name__ == "__main__":
 		port = int(sys.argv[2])
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((host, port))
+l = listener(s)
+l.start()
 buttons = {1113937 : 'a',
 	   1113938 : 'w',
 	   1113939 : 'd',
@@ -35,7 +52,7 @@ cv2.namedWindow("Control")
 while True:
 	checkTime = 0
 	if pressState:
-		checkTime = 100
+		checkTime = 1000
 	key = cv2.waitKey(checkTime)
 	print "key= ", key
 	newState = lastState

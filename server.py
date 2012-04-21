@@ -21,7 +21,8 @@ class client (threading.Thread):
 		if (self.pair != pair):
 			self.pair = pair
 			if (pair != None):
-				self.send("pair")
+				self.send("pair"+pair.sock.host)
+				self.pair.send("pair"+sock.host)
 			else:
 				self.send("no pair")
 			if (pair != None):
