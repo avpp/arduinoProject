@@ -11,6 +11,7 @@ if __name__ == "__main__":
 		host = sys.argv[1]
 	if (len(sys.argv)>2):
 		port = int(sys.argv[2])
+	print "connect to ", host,":",port
 
 out_p = [10,9,8,7,6,5]
 pins = {
@@ -27,7 +28,7 @@ def set_pins(pins):
 
 b = pyfirmata.Arduino('/dev/serial/by-id/usb-Arduino__www.arduino.cc__0043_6413138333135120A251-if00')
 
-videoastream
+
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((host, port))
 while True:
@@ -37,7 +38,7 @@ while True:
 		break
 	elif result.startwith("pair"):
 		hostip = result[4:len(result)]
-		print "pair avaiilable on ip ", hostip)
+		print "pair avaiilable on ip ", hostip
 		videostream = videoStream.Server(hostip)
 		print "caps = ", videostream.emmiter.get_property("caps")
 		s.send("caps"+videostream.emmiter.get_property("caps"))
