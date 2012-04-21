@@ -16,10 +16,12 @@ import videoStream
 class listener (threading.Thread):
 	def __init__(self, sock):
 		self.sock = sock
-		self.alive = true
+		self.alive = True
+		threading.Thread.__init__(self)
 	def run(self):
 		while (self.alive):
 			buf = self.sock.recv(1024)
+			print "accept ", buf
 			if (buf.startwith("caps")):
 				CAPSparam = buf[4:len(buf)]
 				print "we have caps = ", CAPSparam
@@ -34,6 +36,7 @@ if __name__ == "__main__":
 		host = sys.argv[1]
 	if len(sys.argv) > 2:
 		port = int(sys.argv[2])
+print "connect to", host,":",port
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((host, port))
 l = listener(s)
@@ -49,6 +52,7 @@ escapeButton = 1048603
 lastState='x'
 count = 0
 cv2.namedWindow("Control")
+print "create window"
 while True:
 	checkTime = 0
 	if pressState:
