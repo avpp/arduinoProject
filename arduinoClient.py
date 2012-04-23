@@ -36,7 +36,7 @@ while True:
 	print result
 	if result == "exit":
 		break
-	elif result.startwith("pair"):
+	elif result.startswith("pair"):
 		hostip = result[4:len(result)]
 		print "pair avaiilable on ip ", hostip
 		videostream = videoStream.Server(hostip)
