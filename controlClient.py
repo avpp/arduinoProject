@@ -3,6 +3,7 @@ import sys
 import cv2
 import threading
 import videoStream
+#import gtk
 ##
 ## control by opencv window
 ## press ESC for disconnect from server and close window
@@ -14,18 +15,25 @@ import videoStream
 ## press SPACE to send stop command (important in fixrd type of control)
 ##
 class listener (threading.Thread):
-	def __init__(self, sock):
+	def __init__(self, sock, da):
 		self.sock = sock
 		self.alive = True
+		self.da = da
 		threading.Thread.__init__(self)
 	def run(self):
 		while (self.alive):
-			buf = self.sock.recv(1024)
+			buf = None
+			try:
+				buf = self.sock.recv(1024)
+			except KeyboardInterrupt:
+				self.alive = false
+				break
 			print "accept ", buf
-			if (buf.startwith("caps")):
+			buf = buf[buf.find("caps"):len(buf)]
+			if (buf.startswith("caps")):
 				CAPSparam = buf[4:len(buf)]
 				print "we have caps = ", CAPSparam
-				stream = videoStream.client(CAPSparam)
+				stream = videoStream.Client(da, CAPSparam)
 				stream.start()
 				print "vido create"
 host = 'localhost'
@@ -38,9 +46,8 @@ if __name__ == "__main__":
 		port = int(sys.argv[2])
 print "connect to", host,":",port
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+print "connect successful"
 s.connect((host, port))
-l = listener(s)
-l.start()
 buttons = {1113937 : 'a',
 	   1113938 : 'w',
 	   1113939 : 'd',
@@ -51,8 +58,36 @@ changeButton = 1048586
 escapeButton = 1048603
 lastState='x'
 count = 0
-cv2.namedWindow("Control")
+windowName = "ControlWindow"
+print "try to create window"
+cv2.namedWindow(windowName)
+print "try to listen"
+cv2.waitKey(1)
 print "create window"
+
+import gtk
+
+#gg = gtk.window_list_toplevels()
+wnd = gtk.Window()
+#for i in range(len(gg)):
+#	print gg[i].get_title()
+#	if (windowName == gg[i].get_title()):
+#		wnd = gg[i]
+#		break
+if (wnd == None):
+	print "error, no window", windowName
+	exit()
+vb = gtk.VBox()
+wnd.add(vb)
+da = gtk.DrawingArea()
+da.set_size_request(640,480)
+vb.add(da)
+wnd.connect("destroy", gtk.main_quit, "WM destroy")
+wnd.show_all()
+l = listener(s, da)
+l.start()
+
+
 while True:
 	checkTime = 0
 	if pressState:
