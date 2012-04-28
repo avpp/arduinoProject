@@ -3,11 +3,13 @@ import pygtk, gtk, gobject
 import pygst
 pygst.require("0.10")
 import gst
+import cv2
+
 
 class Server:
 	def __init__(self, host, pt=96, port=3000):
 		self.pipeline = gst.Pipeline( "Server_pipeline." )
-		self.cam = gst.element_factory_make("v4l2src") 
+		self.cam = gst.element_factory_make("v4l2src")
 		self.coder = gst.element_factory_make("ffenc_h263")
 		self.rtp = gst.element_factory_make("rtph263ppay")
 		self.rtp.set_property("pt", pt)
@@ -50,10 +52,13 @@ class Client:
 		self.decoder = gst.element_factory_make( "ffdec_h263" )
 		self.colorMatch = gst.element_factory_make( "ffmpegcolorspace" )
 		self.videoscale = gst.element_factory_make( "videoscale" )
-		self.sink = gst.element_factory_make( "autovideosink" )
-		
+		self.sink = gst.element_factory_make( "autovideosink", "sink" )
 		self.pipeline.add( self.receiver, self.rtp, self.decoder, self.colorMatch, self.videoscale, self.sink )
 		gst.element_link_many( self.receiver, self.rtp, self.decoder, self.colorMatch, self.videoscale, self.sink )
+		self.pipeline = gst.parse_launch("udpsrc port=3000 ! "+CAPSparams+" ! rtph263pdepay ! ffdec_h263 ! ffmpegcolorspace ! videoscale ! autovideosink ")
+		
+		self.bus = self.pipeline.get_bus()
+		self.bus.add_signal_watch()
 
 		self.bus = self.pipeline.get_bus()
 		self.bus.add_signal_watch()
@@ -67,5 +72,7 @@ class Client:
 
 	def stop(self):
 		self.pipeline.set_state(gst.STATE_NULL)
+	def setMovieWindow(self, movie_window):
+		self.movie_window = movie_window
 
 
