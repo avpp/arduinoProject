@@ -3,11 +3,11 @@ import pygtk, gtk, gobject
 import pygst
 pygst.require("0.10")
 import gst
-import cv2
 
 
 class Server:
 	def __init__(self, host, pt=96, port=3000):
+		print "try recive video stream to ", host, ":", port
 		self.pipeline = gst.Pipeline( "Server_pipeline." )
 		self.cam = gst.element_factory_make("v4l2src")
 		self.coder = gst.element_factory_make("ffenc_h263")
@@ -25,7 +25,8 @@ class Server:
 	def stop(self):
 		self.pipeline.set_state(gst.STATE_NULL)
 	def getCaps(self):
-		return "application/x-rtp,media=(string)video, clock-rate=(int)90000,encoding-name=(string)H263-1998, payload=(int)96"#self.emitter.get_pad('sink').get_property('caps').to_string()
+		return "application/x-rtp,media=(string)video, clock-rate=(int)90000,encoding-name=(string)H263-1998, payload=(int)96"
+		#return self.emitter.get_pad('sink').get_property('caps').to_string()
 
 class Client:
 	def createWindow(self):
