@@ -18,11 +18,12 @@ class Server:
 		self.pipeline.add(self.cam, self.coder, self.rtp, self.emitter)		
 		gst.element_link_many(self.cam, self.coder, self.rtp, self.emitter)
 		
-		
 	def start(self):
 		self.pipeline.set_state(gst.STATE_PLAYING)
 	def stop(self):
 		self.pipeline.set_state(gst.STATE_NULL)
+	def getCaps(self):
+		return "application/x-rtp,media=(string)video, clock-rate=(int)90000,encoding-name=(string)H263-1998, payload=(int)96"#self.emitter.get_pad('sink').get_property('caps').to_string()
 
 class Client:
 	def createWindow(self):
